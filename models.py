@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLchemy
-db = SQLAlchemy ()
+db = SQLchemy ()
 
 class Usuario (db.Model):
     __tablename = "usuarios"
