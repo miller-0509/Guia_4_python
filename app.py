@@ -6,4 +6,4 @@ load_dotenv()
 
 app = Flask (__name__)
 
-app.config["SQLALCHEMY DATABASE URI"] = os.getenv("DATABASE_URI", "sqlite:///defo")
+app.config["SQLALCHEMY DATABASE URI"] = os.getenv("DATABASE_URI", "sqlite:///defo") 
