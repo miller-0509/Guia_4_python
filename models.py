@@ -16,3 +16,19 @@ class Usuario (db.Model):
             "username": self.username,
             "rol": self.rol,
         }
+    
+class Producto(db.Model):
+    __tablename__ = "productos"
+
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100), nullable=False)
+    precio = db.Column(db.Float, nullable=False)
+    stock = db.Column(db.Integer, default=0)
+
+    def serializar(self) -> dict:
+        return {
+            "id": self.id,
+            "nombre": self.nombre,
+            "precio": self.precio,
+            "stock": self.stock,
+        }
