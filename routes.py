@@ -52,3 +52,16 @@ def login() -> tuple[Response, int]:
         return jsonify({"mensaje": "Login exitoso", "token": token_acceso}), 200
 
     return jsonify({"error": "Credenciales inválidas"}), 401
+
+@api_bp.route('/inventario/critico', methods=['POST'])
+@jwt_required()
+def modificar_inventario() -> tuple[Response, int]:
+    usuario_actual = get_jwt_identity()
+
+    if usuario_actual.get("rol") != "Admin":
+        return jsonify({"error": "Forbidden: Requiere privilegios de Administrador"}), 403
+
+    return jsonify({
+        "mensaje": "Acceso concedido al servidor.",
+        "operador": usuario_actual["username"]
+    }), 200
