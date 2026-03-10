@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, Response
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from models import db, Usuario
+from models import db, Usuario, Producto
 
 api_bp = Blueprint('api', __name__)
 
@@ -46,9 +46,7 @@ def login() -> tuple[Response, int]:
     usuario = Usuario.query.filter_by(username=payload.get('username')).first()
 
     if usuario and check_password_hash(usuario.password_hash, payload.get('password')):
-        identidad = {"username": usuario.username, "rol": usuario.rol}
-        token_acceso = create_access_token(identity=identidad)
-
+        token_acceso = create_access_token(identity=usuario.username)
         return jsonify({"mensaje": "Login exitoso", "token": token_acceso}), 200
 
     return jsonify({"error": "Credenciales inválidas"}), 401
@@ -57,11 +55,41 @@ def login() -> tuple[Response, int]:
 @jwt_required()
 def modificar_inventario() -> tuple[Response, int]:
     usuario_actual = get_jwt_identity()
+    usuario = Usuario.query.filter_by(username=usuario_actual).first()
 
-    if usuario_actual.get("rol") != "Admin":
+    if usuario.rol != "Admin":
         return jsonify({"error": "Forbidden: Requiere privilegios de Administrador"}), 403
 
     return jsonify({
         "mensaje": "Acceso concedido al servidor.",
         "operador": usuario_actual["username"]
     }), 200
+
+@api_bp.route('/productos', methods=['POST'])
+@jwt_required()
+def crear_producto() -> tuple[Response, int]:
+    usuario_actual = get_jwt_identity()
+    usuario = Usuario.query.filter_by(username=usuario_actual).first()
+
+    if usuario.rol != "Admin":
+        return jsonify({"error": "Forbidden: Requiere privilegios de Administrador"}), 403
+
+    try:
+        payload = request.get_json()
+        nuevo_producto = Producto(
+            nombre=payload['nombre'],
+            precio=payload['precio'],
+            stock=payload.get('stock', 0)
+        )
+        db.session.add(nuevo_producto)
+        db.session.commit()
+        return jsonify({"mensaje": "Producto creado", "data": nuevo_producto.serializar()}), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Fallo de integridad", "detalle": str(e)}), 400
+    
+@api_bp.route('/productos', methods=['GET'])
+def listar_productos() -> tuple[Response, int]:
+    productos = Producto.query.all()
+    return jsonify([p.serializar() for p in productos]), 200
