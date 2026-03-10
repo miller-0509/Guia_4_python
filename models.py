@@ -13,6 +13,6 @@ class Usuario (db.Model):
     def serializar(self) -> dict:
         return {
             "id": self.id,
-            "username": self.usenarme,
+            "username": self.username,
             "rol": self.rol,
         }
