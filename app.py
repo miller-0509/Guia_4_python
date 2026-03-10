@@ -18,4 +18,7 @@ migrate = Migrate(app, db)
 jwt = JWTManager(app) 
 
 if __name__ == "__main__" :
-    app.run(port=int(os.getenv("PORT", 5000)), debug=os.getenv("FLASK_DEBUG"))
+    puerto = int(os.getenv("PORT", 5000))
+    modo_debug = os.getenv("FLASK_DEBUG") == "True"
+    app.run(port=puerto, debug=modo_debug)
+    
