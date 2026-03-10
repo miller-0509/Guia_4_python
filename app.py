@@ -17,8 +17,10 @@ db.init_app(app)
 migrate = Migrate(app, db)
 jwt = JWTManager(app) 
 
+from routes import api_bp
+app.register_blueprint(api_bp, url_prefix='/api')
+
 if __name__ == "__main__" :
     puerto = int(os.getenv("PORT", 5000))
     modo_debug = os.getenv("FLASK_DEBUG") == "True"
     app.run(port=puerto, debug=modo_debug)
-    
