@@ -24,5 +24,3 @@ if __name__ == "__main__" :
     puerto = int(os.getenv("PORT", 5000))
     modo_debug = os.getenv("FLASK_DEBUG") == "True"
     app.run(host='0.0.0.0', port=puerto, debug=modo_debug)
-
-
